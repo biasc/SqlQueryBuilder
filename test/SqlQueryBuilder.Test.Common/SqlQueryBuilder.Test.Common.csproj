@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\SqlQueryBuilder.Abstractions\SqlQueryBuilder.Abstractions.csproj" />
+      <ProjectReference Include="..\..\src\SqlQueryBuilder.MySQL\SqlQueryBuilder.MySQL.csproj" />
+      <ProjectReference Include="..\..\src\SqlQueryBuilder.Oracle\SqlQueryBuilder.Oracle.csproj" />
+      <ProjectReference Include="..\..\src\SqlQueryBuilder.SqlServer\SqlQueryBuilder.SqlServer.csproj" />
+      <ProjectReference Include="..\..\src\SqlQueryBuilder\SqlQueryBuilder.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NUnit" Version="4.1.0" />
+    </ItemGroup>
+
+</Project>
