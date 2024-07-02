@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Linq.Expressions;
 using System.Text;
 using SqlQueryBuilder.Abstractions;
@@ -9,7 +8,6 @@ namespace SqlQueryBuilder.Parts;
 
 public class SqlQueryFrom<T> : 
     ISqlQueryPart,
-    ISqlQueryWithSelect<T>,
     ISqlQueryFrom<T>
     where T : ISqlEntity
 {
@@ -61,31 +59,23 @@ public class SqlQueryFrom<T> :
 
         return fromBuilder.ToString();
     }
-    //
-    // public IEnumerator<ISqlQueryPart> GetEnumerator()
-    // {
-    //     throw new NotImplementedException();
-    // }
-    //
-    // IEnumerator IEnumerable.GetEnumerator()
-    // {
-    //     return GetEnumerator();
-    // }
     
-    public ISqlQuerySelect<T> Select<TS>(Expression<Func<T, TS>> select)
+    public ISqlQuerySelect<TS> Select<TS>(Expression<Func<T, TS>> select) where TS: ISqlEntity
     {
-        return new SqlQuerySelect<T>(_sqlParts, [select]);
+        return new SqlQuerySelect<TS>(_sqlParts, [select]);
     }
 
     public ISqlQuerySelect<T> Select(Expression<Func<T, object?>> select, params Expression<Func<T, object?>>[] otherSelect)
     {
-        var merged = select.Merge(otherSelect);
-        return new SqlQuerySelect<T>(_sqlParts, merged);
+        return new SqlQuerySelect<T>(_sqlParts, select.Merge(otherSelect));
     }
 
-    public ISqlQuerySelect<TS> Select<TS>(Expression<Func<T, TS, object>> select, params Expression<Func<T, TS, object>>[] otherSelect)
+    public ISqlQuerySelect<TS> Select<TS>(
+        Expression<Func<T, TS,
+            object>> select,
+        params Expression<Func<T, TS, object>>[] otherSelect)  where TS: ISqlEntity
     {
-        throw new NotImplementedException();
+        return new SqlQuerySelect<TS>(_sqlParts, select.Merge(otherSelect));
     }
 
     public ISqlQueryWhere<T> Where(Expression<Func<T, bool>> where)
@@ -103,5 +93,35 @@ public class SqlQueryFrom<T> :
         params Expression<Func<T, object>>[] otherOrderBy)
     {
          return new SqlQueryOrder<T>(_sqlParts, orderBy, otherOrderBy);
+    }
+
+    public ISqlQueryJoin<T, TJ1> InnerJoin<TJ1>(ISqlQuerySelect select, Expression<Func<T, TJ1, bool>> join) where TJ1 : ISqlEntity
+    {
+        return new SqlQueryJoin<T, TJ1>(_sqlParts, JoinType.Inner, join, select);
+    }
+
+    public ISqlQueryJoin<T, TJ1> InnerJoin<TJ1>(Expression<Func<T, TJ1, bool>> join) where TJ1 : ISqlEntity
+    {
+        return new SqlQueryJoin<T, TJ1>(_sqlParts, JoinType.Inner, join);
+    }
+
+    public ISqlQueryJoin<T, TJ1> LeftOuterJoin<TJ1>(ISqlQuerySelect<TJ1> select, Expression<Func<T, TJ1, bool>> join) where TJ1 : ISqlEntity
+    {
+        return new SqlQueryJoin<T, TJ1>(_sqlParts, JoinType.Left, join, select);
+    }
+
+    public ISqlQueryJoin<T, TJ1> LeftOuterJoin<TJ1>(Expression<Func<T, TJ1, bool>> join) where TJ1 : ISqlEntity
+    {
+        return new SqlQueryJoin<T, TJ1>(_sqlParts, JoinType.Left, join);
+    }
+
+    public ISqlQueryJoin<T, TJ1> RightOuterJoin<TJ1>(Expression<Func<T, TJ1, bool>> join) where TJ1 : ISqlEntity
+    {
+        return new SqlQueryJoin<T, TJ1>(_sqlParts, JoinType.Right, join);
+    }
+
+    public ISqlQueryJoin<T, TJ1> RightOuterJoin<TJ1>(ISqlQuerySelect<TJ1> select, Expression<Func<T, TJ1, bool>> join) where TJ1 : ISqlEntity
+    {
+        return new SqlQueryJoin<T, TJ1>(_sqlParts, JoinType.Right, join, select);
     }
 }

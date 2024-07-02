@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using SqlQueryBuilder.Abstractions;
 
-namespace SqlQueryBuilder.Test.Common.Models.Select;
+namespace SqlQueryBuilder.Test.Common.Models;
 
 [Table("SelectTestTable")]
 public class SelectModelEntity: ISqlEntity

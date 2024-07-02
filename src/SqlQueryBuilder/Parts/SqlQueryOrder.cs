@@ -6,47 +6,111 @@ using SqlQueryBuilder.Abstractions.Parts;
 
 namespace SqlQueryBuilder.Parts;
 
-public class SqlQueryOrder<T> : ISqlQueryOrder<T>
-    where T : ISqlEntity
+public abstract class SqlQueryOrder: ISqlQueryPart
 {
-    private readonly IList<ISqlQueryPart> _sqlParts;
-    private readonly Expression[] _orderBy;
-    
-    internal SqlQueryOrder(IList<ISqlQueryPart>? sqlParts, Expression orderBy, Expression[] otherOrderBy)
+    protected readonly IList<ISqlQueryPart> SqlParts;
+    protected readonly Expression[] OrderBy;
+    protected SqlQueryOrder(IList<ISqlQueryPart>? sqlParts, Expression orderBy, Expression[] otherOrderBy)
     {
-        _sqlParts = sqlParts ?? new List<ISqlQueryPart>();
-        _orderBy = orderBy.Merge(otherOrderBy);
+        SqlParts = sqlParts ?? new List<ISqlQueryPart>();
+        OrderBy = orderBy.Merge(otherOrderBy);
 
-        _sqlParts.Add(this);
+        SqlParts.Add(this);
     }
-
 
     public SqlPartType PartType => SqlPartType.Order;
     public string Compute(ISqlQueryTranslator translator)
     {
-        return $"ORDER BY {string.Join(", ", _orderBy.Select(o => translator.Compute(o)))}";
+        return $"ORDER BY {string.Join(", ", OrderBy.Select(o => translator.Compute(o)))}";
+    }
+}
+
+public class SqlQueryOrder<T> : SqlQueryOrder, ISqlQueryOrder<T>
+    where T : ISqlEntity
+{
+    internal SqlQueryOrder(
+        IList<ISqlQueryPart>? sqlParts,
+        Expression orderBy,
+        Expression[] otherOrderBy)
+        : base(sqlParts, orderBy, otherOrderBy)
+    {
+    }
+    public ISqlQuerySelect<TS> Select<TS>(Expression<Func<T, TS>> select) where TS: ISqlEntity
+    {
+        return new SqlQuerySelect<TS>(SqlParts, [select]);
     }
 
-    public IEnumerator<ISqlQueryPart> GetEnumerator()
+    public ISqlQuerySelect<T> Select(Expression<Func<T, object>> select, params Expression<Func<T, object>>[] otherSelect)
     {
-        throw new NotImplementedException();
+        return new SqlQuerySelect<T>(SqlParts, [select]);
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    public ISqlQuerySelect<TS> Select<TS>(Expression<Func<T, TS, object>> select, params Expression<Func<T, TS, object>>[] otherSelect) where TS : ISqlEntity
     {
-        throw new NotImplementedException();
+        return new SqlQuerySelect<TS>(SqlParts, [select]);
     }
-    
-    public ISqlQuerySelect<T> Select<TS>(Expression<Func<T, TS>> select)
+}
+
+public class SqlQueryOrder<T, TJ1> : SqlQueryOrder, ISqlQueryOrder<T, TJ1>
+    where T : ISqlEntity
+    where TJ1 : ISqlEntity
+{
+    internal SqlQueryOrder(
+        IList<ISqlQueryPart>? sqlParts,
+        Expression orderBy,
+        Expression[] otherOrderBy) 
+        : base(sqlParts, orderBy, otherOrderBy) { }
+
+    public ISqlQuerySelect<TS> Select<TS>(Expression<Func<T, TJ1, TS>> select) where TS : ISqlEntity
     {
-        return new SqlQuerySelect<T>(_sqlParts, [select]);
+        return new SqlQuerySelect<TS>(SqlParts, select.Merge());
     }
 
-    public ISqlQuerySelect<T> Select(Expression<Func<T, object?>> select, params Expression<Func<T, object?>>[] otherSelect)
+    public ISqlQuerySelect<T> Select(Expression<Func<T, object>> select, params Expression<Func<T, object>>[] otherSelect)
     {
-        if (select == null)
-            throw new ArgumentNullException(nameof(select));
-        
-        return new SqlQuerySelect<T>(_sqlParts, select.Merge(otherSelect));
+        return new SqlQuerySelect<T>(SqlParts, select.Merge(otherSelect));
+    }
+
+    public ISqlQuerySelect<TS> Select<TS>(Expression<Func<T, TJ1, TS, object>> select, params Expression<Func<T, TJ1, TS, object>>[] otherSelect) where TS : ISqlEntity
+    {
+        return new SqlQuerySelect<TS>(SqlParts, select.Merge(otherSelect));
+    }
+
+    public ISqlQueryOrder<T, TJ1> OrderBy(
+        Expression<Func<T, TJ1, object?>> orderBy, params Expression<Func<T, TJ1, object?>>[] otherOrderBy)
+    {
+        return new SqlQueryOrder<T, TJ1>(SqlParts, orderBy, otherOrderBy);
+    }
+}
+
+public class SqlQueryOrder<T, TJ1, TJ2> : SqlQueryOrder, ISqlQueryOrder<T, TJ1, TJ2>
+    where T : ISqlEntity
+    where TJ1 : ISqlEntity
+    where TJ2 : ISqlEntity
+{
+    internal SqlQueryOrder(
+        IList<ISqlQueryPart>? sqlParts,
+        Expression orderBy,
+        Expression[] otherOrderBy) 
+        : base(sqlParts, orderBy, otherOrderBy) { }
+
+    public ISqlQuerySelect<TS> Select<TS>(Expression<Func<T, TJ1, TJ2, TS>> select) where TS : ISqlEntity
+    {
+        return new SqlQuerySelect<TS>(SqlParts, select.Merge());
+    }
+
+    public ISqlQuerySelect<T> Select(Expression<Func<T, object>> select, params Expression<Func<T, object>>[] otherSelect)
+    {
+        return new SqlQuerySelect<T>(SqlParts, select.Merge(otherSelect));
+    }
+
+    public ISqlQuerySelect<TS> Select<TS>(Expression<Func<T, TJ1, TJ2, TS, object>> select, params Expression<Func<T, TJ1, TJ2, TS, object>>[] otherSelect) where TS : ISqlEntity
+    {
+        return new SqlQuerySelect<TS>(SqlParts, select.Merge(otherSelect));
+    }
+
+    public ISqlQueryOrder<T, TJ1, TJ2> OrderBy(Expression<Func<T, TJ1, TJ2, object?>> orderBy, params Expression<Func<T, TJ1, TJ2, object?>>[] otherOrderBy)
+    {
+        return new SqlQueryOrder<T, TJ1, TJ2>(SqlParts, orderBy, otherOrderBy);
     }
 }

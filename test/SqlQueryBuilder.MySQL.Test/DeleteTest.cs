@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using SqlQueryBuilder.Test.Common;
-using SqlQueryBuilder.Test.Common.Models.Delete;
+using SqlQueryBuilder.Test.Common.Models;
 
 namespace SqlQueryBuilder.MySQL.Test;
 

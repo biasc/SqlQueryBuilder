@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using SqlQueryBuilder.Abstractions;
 
-namespace SqlQueryBuilder.Test.Common.Models.Delete;
+namespace SqlQueryBuilder.Test.Common.Models;
 
 [Table("TestTable")]
 public class DeleteModelEntity: ISqlEntity

@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using SqlQueryBuilder.Test.Common;
-using SqlQueryBuilder.Test.Common.Models.Drop;
+using SqlQueryBuilder.Test.Common.Models;
 
 namespace SqlQueryBuilder.SqlServer.Test;
 

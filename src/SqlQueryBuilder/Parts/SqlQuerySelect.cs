@@ -6,7 +6,8 @@ using SqlQueryBuilder.Abstractions.Parts;
 
 namespace SqlQueryBuilder.Parts;
 
-public class SqlQuerySelect<T> : ISqlQuerySelect<T>
+public class SqlQuerySelect<T> : 
+    ISqlQuerySelect<T>
     where T : ISqlEntity
 {
     private readonly Expression[]? _select;
@@ -98,13 +99,13 @@ public class SqlQuerySelect<T> : ISqlQuerySelect<T>
         return GetEnumerator();
     }
 
-    public ISqlQuerySelect<T> Count()
+    public ISqlQuerySelect Count()
     {
         _count = true;
         return this;
     }
 
-    public ISqlQuerySelect<T> Distinct()
+    public ISqlQuerySelect Distinct()
     {
         _distinct = true;
         return this;

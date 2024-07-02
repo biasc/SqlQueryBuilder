@@ -4,7 +4,7 @@ using SqlQueryBuilder.MySQL.Attributes;
 using SqlQueryBuilder.Oracle.Attributes;
 using SqlQueryBuilder.SqlServer.Attributes;
 
-namespace SqlQueryBuilder.Test.Common.Models.Delete;
+namespace SqlQueryBuilder.Test.Common.Models;
 
 [OracleTable("TestTable-ORACLE")]
 [SqlServerTable("TestTable-SQL")]

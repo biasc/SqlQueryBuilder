@@ -1,7 +1,7 @@
 using NUnit.Framework;
 using SqlQueryBuilder.Abstractions.Extensions;
 using SqlQueryBuilder.Test.Common;
-using SqlQueryBuilder.Test.Common.Models.Select;
+using SqlQueryBuilder.Test.Common.Models;
 
 namespace SqlQueryBuilder.Oracle.Test;
 
